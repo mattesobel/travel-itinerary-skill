@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<!--
+  TRAVEL ITINERARY — DASHBOARD TEMPLATE
+  A single, self-contained, re-themeable trip dashboard. Adapt it per trip.
+  The four things to change, in order of impact:
+
+  1) PALETTE  — re-theme the CSS :root variables to evoke the destination.
+                This single change makes each dashboard feel bespoke. Examples:
+                  Greek islands = Aegean blue / terracotta / gold
+                  Sicily       = ochre / sea blue / lemon / volcanic charcoal
+                  Tuscany      = olive / stone / wine
+                  Japan spring = blossom pink / ink / pale wood
+                  Iceland      = glacier blue / basalt / moss
+  2) LEG COLORS — give each base location its own accent (the .card.legX rules + matching .tag rules),
+                  and use it consistently in the route strip dots and the day cards.
+  3) HERO     — kicker (occasion), title (destination), dates, one-line subtitle.
+  4) CONTENT  — the route strip (one .stop per base + nights), and one .day block per day.
+
+  Keep it a single self-contained file. Fonts from Google Fonts only. No scripts, no localStorage.
+  Render undecided days/hotels as honest, pretty "still deciding" cards — never leave holes.
+  Call out travel components (flights, transfers, check-ins) with the .travel card style.
+-->
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{TRIP TITLE}} — Our Trip</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<!-- A serif display face + a clean sans. Swap the families if a different mood suits the place. -->
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    /* ---- PALETTE: re-theme these per destination ---- */
+    --primary:#1b4965;       /* deep anchor color */
+    --primary-mid:#2a6f97;
+    --accent-sea:#468faf;    /* mid tone used on dividers + default card accent */
+    --accent-soft:#a9d6e5;
+    --tint:#e7f3f8;          /* pale wash for chips + notes block */
+    --leg2:#2a9d8f;          /* second base accent */
+    --leg2-tint:#e3f4f1;
+    --leg3:#c47a4f;          /* third base accent */
+    --leg3-tint:#f6ebe2;
+    --gold:#bd9a2a;          /* feature / special-day highlight */
+    --gold-soft:#f5eccf;
+    --ink:#27313a;
+    --muted:#6b7785;
+    --paper:#fcfbf7;
+    --card:#ffffff;
+    --neutral:#aab6c0;       /* travel days */
+    --neutral-tint:#eef1f3;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;line-height:1.6;-webkit-font-smoothing:antialiased;}
+  .wrap{max-width:880px;margin:0 auto;padding:0 22px 64px;}
+
+  /* Hero — PHOTOGRAPHIC. A gradient wash sits OVER a destination photo so the title stays readable.
+     Replace the url() with your hero image (one wide, iconic shot of the destination).
+     Retint the gradient rgba()s toward your palette. Tune the "center 55%" to frame the photo.
+     If you have no image yet, the gradient alone still looks good — just drop the url() line. */
+  .hero{position:relative;margin:0 -22px 0;padding:64px 22px 88px;text-align:center;color:#fff;overflow:hidden;
+    background:
+      linear-gradient(160deg,rgba(27,73,101,.82) 0%,rgba(42,111,151,.66) 48%,rgba(70,143,175,.60) 100%),
+      url("itinerary-images/hero.jpg") center 55%/cover no-repeat;}
+  .hero .kicker{font-size:13px;letter-spacing:.32em;text-transform:uppercase;color:var(--accent-soft);font-weight:600;margin-bottom:18px;}
+  .hero h1{font-family:'Cormorant Garamond',Georgia,serif;font-weight:600;font-size:clamp(42px,8vw,72px);line-height:1.02;margin:0 0 14px;letter-spacing:.5px;}
+  .hero .dates{font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-size:clamp(20px,3.4vw,28px);color:#eaf6fb;margin-bottom:8px;}
+  .hero .sub{font-size:15px;color:#d6ecf4;max-width:520px;margin:10px auto 0;}
+  .wave{display:block;width:100%;height:46px;margin:-46px 0 0;}
+
+  /* Route strip ("The Journey") */
+  .glance{background:var(--card);border:1px solid #ece6da;border-radius:18px;box-shadow:0 14px 40px -28px rgba(0,0,0,.35);padding:26px 24px;margin:-44px 0 44px;position:relative;z-index:2;}
+  .glance h2{font-family:'Cormorant Garamond',Georgia,serif;text-align:center;font-size:24px;font-weight:600;margin:0 0 20px;color:var(--primary);}
+  .route{display:flex;align-items:stretch;justify-content:space-between;gap:8px;}
+  .stop{flex:1;text-align:center;position:relative;padding-top:6px;}
+  .stop .dot{width:34px;height:34px;border-radius:50%;margin:0 auto 10px;display:flex;align-items:center;justify-content:center;font-size:16px;background:var(--tint);border:2px solid var(--accent-sea);}
+  .stop.leg2 .dot{background:var(--leg2-tint);border-color:var(--leg2);}
+  .stop.leg3 .dot{background:var(--leg3-tint);border-color:var(--leg3);}
+  .stop .place{font-weight:600;font-size:15px;color:var(--ink);}
+  .stop .nights{font-size:12.5px;color:var(--muted);letter-spacing:.04em;}
+  .route .line{flex:0 0 auto;align-self:flex-start;margin-top:22px;color:#cdd6dd;font-size:18px;}
+
+  /* Section heading */
+  .sec-head{font-family:'Cormorant Garamond',Georgia,serif;font-size:30px;font-weight:600;color:var(--primary);text-align:center;margin:8px 0 6px;}
+  .sec-rule{width:54px;height:3px;background:var(--gold);border-radius:3px;margin:0 auto 30px;}
+
+  /* Timeline */
+  .timeline{position:relative;}
+  .day{display:grid;grid-template-columns:96px 1fr;gap:18px;margin-bottom:16px;align-items:stretch;}
+  .when{text-align:right;padding-top:16px;}
+  .when .dow{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:600;}
+  .when .date{font-family:'Cormorant Garamond',Georgia,serif;font-size:30px;font-weight:600;color:var(--primary);line-height:1;}
+  .when .mon{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:600;}
+  .card{background:var(--card);border:1px solid #ece6da;border-left:5px solid var(--accent-sea);border-radius:14px;padding:16px 20px;box-shadow:0 10px 30px -26px rgba(0,0,0,.35);}
+  /* Leg variants: map each base location to one of these */
+  .card.travel{border-left-color:var(--neutral);background:#fbfbfa;}
+  .card.leg1{border-left-color:var(--primary);}
+  .card.leg2{border-left-color:var(--leg2);}
+  .card.leg3{border-left-color:var(--leg3);}
+  .card.feature{border-left-color:var(--gold);background:linear-gradient(180deg,#fffdf4,#fff);} /* anniversary / birthday / marquee day */
+  .card.tbd{border-left-color:#cbd2d8;background:repeating-linear-gradient(135deg,#fff,#fff 10px,#fbfaf7 10px,#fbfaf7 20px);} /* still-deciding day */
+  .card .tag{display:inline-block;font-size:11px;letter-spacing:.12em;text-transform:uppercase;font-weight:600;padding:3px 9px;border-radius:20px;margin-bottom:8px;background:var(--tint);color:var(--primary-mid);}
+  .card.leg2 .tag{background:var(--leg2-tint);color:#1d7a6e;}
+  .card.leg3 .tag{background:var(--leg3-tint);color:#a85c33;}
+  .card.travel .tag{background:var(--neutral-tint);color:#5d6b76;}
+  .card.feature .tag{background:var(--gold-soft);color:#8a7012;}
+  .card.tbd .tag{background:#eef1f3;color:#6b7785;}
+  .card h3{font-family:'Cormorant Garamond',Georgia,serif;font-size:23px;font-weight:600;margin:0 0 4px;color:var(--ink);}
+  .card p{margin:0;font-size:14.5px;color:#3c4751;}
+  .card .star{color:var(--gold);}
+  /* Day photos: one real image per day. object-fit:cover + the .pos-* helpers frame the subject. */
+  .day-photo{margin:14px 0 4px;border-radius:12px;overflow:hidden;border:1px solid rgba(0,0,0,.10);box-shadow:0 12px 24px -20px rgba(0,0,0,.6);}
+  .day-photo img{display:block;width:100%;height:230px;object-fit:cover;}
+  .day-photo figcaption{padding:7px 12px;font-size:11.5px;line-height:1.35;color:var(--muted);background:rgba(255,255,255,.9);}
+  .day-photo .pos-top{object-position:center 22%;}
+  .day-photo .pos-mid{object-position:center 42%;}
+  .day-photo .pos-low{object-position:center 68%;}
+  .day-photo .pos-left{object-position:28% center;}
+  .day-photo .pos-right{object-position:70% center;}
+  /* Image credits block (sit it just above the footer) */
+  .credits{font-size:11.5px;line-height:1.55;color:var(--muted);background:var(--neutral-tint);border-radius:14px;padding:14px 18px;margin-top:22px;}
+  .credits strong{color:var(--ink);}
+  .credits a{color:var(--primary-mid);}
+  /* Optional: a small row of logistics chips inside a card (e.g. flight #, conf #, check-in) */
+  .meta{margin-top:10px;display:flex;flex-wrap:wrap;gap:6px;}
+  .meta span{font-size:11.5px;color:var(--muted);background:var(--neutral-tint);border-radius:6px;padding:2px 8px;}
+
+  /* Notes */
+  .notes{margin-top:40px;background:var(--tint);border-radius:18px;padding:26px 28px;}
+  .notes h2{font-family:'Cormorant Garamond',Georgia,serif;font-size:24px;color:var(--primary);margin:0 0 14px;}
+  .notes ul{margin:0;padding-left:0;list-style:none;display:grid;gap:10px;}
+  .notes li{font-size:14px;color:#34424d;padding-left:26px;position:relative;}
+  .notes li::before{content:"\2022";position:absolute;left:8px;color:var(--accent-sea);font-size:18px;line-height:1.2;}
+  .foot{text-align:center;color:var(--muted);font-size:12.5px;margin-top:34px;font-style:italic;}
+
+  @media (max-width:560px){
+    .day{grid-template-columns:64px 1fr;gap:12px;}
+    .when .date{font-size:24px;}
+    .route{flex-wrap:wrap;}
+    .route .line{display:none;}
+    .stop{flex:1 1 40%;margin-bottom:6px;}
+  }
+</style>
+</head>
+<body>
+  <div class="hero">
+    <div class="kicker">{{OCCASION — e.g. Our Family Trip}}</div>
+    <h1>{{DESTINATION — e.g. Sicily}}</h1>
+    <div class="dates">{{DATE RANGE}}</div>
+    <div class="sub">{{ONE-LINE SUMMARY of the shape of the trip}}</div>
+  </div>
+  <!-- Wave divider. Retint the two fills to your accent-sea + paper if you change the palette. -->
+  <svg class="wave" viewBox="0 0 880 46" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M0,46 L0,20 C150,40 300,0 440,16 C580,32 720,44 880,18 L880,46 Z" fill="#468faf"/>
+    <path d="M0,46 L0,30 C160,46 320,14 460,26 C600,38 740,48 880,28 L880,46 Z" fill="#fcfbf7"/>
+  </svg>
+
+  <div class="wrap">
+
+    <!-- THE JOURNEY: one .stop per base location. Add class leg2 / leg3 to match the leg colors.
+         Put a connector arrow (.line) between stops. Use an emoji in .dot that fits the place. -->
+    <div class="glance">
+      <h2>The Journey</h2>
+      <div class="route">
+        <div class="stop"><div class="dot">&#x1F3DB;&#xFE0F;</div><div class="place">{{Base 1}}</div><div class="nights">{{N nights}}</div></div>
+        <div class="line">&#10230;</div>
+        <div class="stop leg2"><div class="dot">&#9875;</div><div class="place">{{Base 2}}</div><div class="nights">{{N nights}}</div></div>
+        <div class="line">&#10230;</div>
+        <div class="stop leg3"><div class="dot">&#127958;&#65039;</div><div class="place">{{Base 3}}</div><div class="nights">{{N nights}}</div></div>
+      </div>
+    </div>
+
+    <div class="sec-head">Day by Day</div>
+    <div class="sec-rule"></div>
+
+    <!-- TIMELINE: one .day block per day. Card class = travel | leg1 | leg2 | leg3 | feature | tbd.
+         Tag = location or theme. h3 = 3-6 word evocative headline. p = 1-2 warm sentences.
+         Use the .travel class for any day with a flight, transfer, or check-in so logistics read at a glance.
+         Optionally add a .meta row of chips for flight #, confirmation #, pickup time, etc. -->
+    <div class="timeline">
+
+      <div class="day">
+        <div class="when"><div class="dow">{{Day}}</div><div class="date">{{##}}</div><div class="mon">{{Mon}}</div></div>
+        <div class="card travel">
+          <span class="tag">Travel</span>
+          <h3>{{Headline — e.g. Wheels Down, Adventure Begins}}</h3>
+          <p>{{Arrival / transfer / check-in, in one or two warm sentences.}}</p>
+          <div class="meta"><span>{{Flight #}}</span><span>{{Arrive HH:MM}}</span><span>{{Transfer to hotel}}</span></div>
+        </div>
+      </div>
+
+      <div class="day">
+        <div class="when"><div class="dow">{{Day}}</div><div class="date">{{##}}</div><div class="mon">{{Mon}}</div></div>
+        <div class="card leg1">
+          <span class="tag">{{Base 1}}</span>
+          <h3>{{Headline}}</h3>
+          <p>{{One or two sentences on the flow of the day.}}</p>
+          <!-- DAY PHOTO: a real image of where they'll be this day. Pick a .pos-* class so the
+               subject is framed well. Write real alt text. Keep the caption short and evocative. -->
+          <figure class="day-photo">
+            <img class="pos-mid" src="itinerary-images/{{day-place}}.jpg" alt="{{what the photo shows}}" loading="lazy">
+            <figcaption>{{Short evocative caption for the day}}</figcaption>
+          </figure>
+        </div>
+      </div>
+
+      <!-- Example of a feature day (anniversary / birthday / marquee experience) -->
+      <div class="day">
+        <div class="when"><div class="dow">{{Day}}</div><div class="date">{{##}}</div><div class="mon">{{Mon}}</div></div>
+        <div class="card feature">
+          <span class="tag">&#10024; {{Feature label}}</span>
+          <h3>{{Headline}}</h3>
+          <p>{{The special moment.}} <span class="star">&#10024;</span></p>
+        </div>
+      </div>
+
+      <!-- Example of a still-deciding day. Keep it honest and pretty, not a blank. -->
+      <div class="day">
+        <div class="when"><div class="dow">{{Day}}</div><div class="date">{{##}}</div><div class="mon">{{Mon}}</div></div>
+        <div class="card tbd">
+          <span class="tag">Still deciding</span>
+          <h3>{{Open day}}</h3>
+          <p>A free day we haven't locked yet. Candidates: {{options}}.</p>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- GOOD TO KNOW: the handful of orienting notes — the rhythm, seasonal realities, logistics philosophy. -->
+    <div class="notes">
+      <h2>Good to Know</h2>
+      <ul>
+        <li><strong>{{Theme}}:</strong> {{note}}</li>
+        <li><strong>{{Theme}}:</strong> {{note}}</li>
+        <li><strong>{{Theme}}:</strong> {{note}}</li>
+      </ul>
+    </div>
+
+    <!-- IMAGE CREDITS: list photo sources here. Keep it short and honest. -->
+    <div class="credits">
+      <strong>Photos:</strong> {{Source — e.g. Wikimedia Commons / Unsplash, with photographer names and license where required}}.
+    </div>
+
+    <div class="foot">{{Destination}} &middot; {{N nights}} &middot; {{Date range}}</div>
+
+  </div>
+</body>
+</html>
