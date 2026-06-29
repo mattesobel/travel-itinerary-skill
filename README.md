@@ -2,11 +2,17 @@
 
 Plan a trip and get a beautiful, living itinerary you'll actually want to share.
 
+![A finished trip dashboard built with this skill: a 10-day Italy & Sicily family itinerary](examples/sicily-family-trip-preview.png)
+
 This is an [agent skill](https://docs.claude.com/en/docs/agents-and-tools/agent-skills/overview) that turns any AI assistant into a thoughtful travel planner. Tell it where you're going and it researches the destination, builds a gorgeous self-contained dashboard with a photo for every day, drafts the emails to your hotels and restaurants, and keeps everything up to date as your plans firm up. Drop in your booking confirmations and it files them for you.
 
 It works with any agent that supports skills, and it's designed to plug into airline and hotel connectors as those become available, so one day it can pull your reservations and book for you directly.
 
 ---
+
+## See a real example
+
+Here's a real trip built with this skill: **[`examples/sicily-family-trip.html`](examples/sicily-family-trip.html)** — a 10-day Italy & Sicily family itinerary. Download it and open it in your browser to see the full dashboard: a photographic hero, the route strip, a real photo for every day, and the color-coded day-by-day timeline. (It's one self-contained file, so it just opens, no setup.)
 
 ## What you get
 
@@ -45,7 +51,7 @@ Download [`travel-itinerary.skill`](./travel-itinerary.skill) and install it:
 Clone the repo and point your agent at the `travel-itinerary/` folder:
 
 ```bash
-git clone https://github.com/<your-username>/travel-itinerary-skill.git
+git clone https://github.com/mattesobel/travel-itinerary-skill.git
 ```
 
 The skill is just Markdown plus a few template files and one small Python script. There's nothing to build and no dependencies to install. Any assistant that can read a `SKILL.md` and follow it can use it.
