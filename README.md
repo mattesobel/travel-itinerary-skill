@@ -4,9 +4,9 @@ Plan a trip and get a beautiful, living itinerary you'll actually want to share.
 
 ![A finished trip dashboard built with this skill: a 10-day Italy & Sicily family itinerary](examples/sicily-family-trip-preview.png)
 
-This is an [agent skill](https://docs.claude.com/en/docs/agents-and-tools/agent-skills/overview) that turns any AI assistant into a thoughtful travel planner. Tell it where you're going and it researches the destination, builds a gorgeous self-contained dashboard with a photo for every day, drafts the emails to your hotels and restaurants, and keeps everything up to date as your plans firm up. Drop in your booking confirmations and it files them for you.
+This is an [agent skill](https://docs.claude.com/en/docs/agents-and-tools/agent-skills/overview) that turns an AI assistant into a thoughtful travel planner. Tell it where you're going and it researches the destination, builds a gorgeous self-contained dashboard with a photo for every day, drafts the emails to your hotels and restaurants, and keeps everything up to date as your plans firm up. Drop in your booking confirmations and it files them for you.
 
-It works with any agent that supports skills, and it's designed to plug into airline and hotel connectors as those become available, so one day it can pull your reservations and book for you directly.
+**It works with any AI you choose.** Underneath, it's just a folder of plain-English instructions plus one small script, so any assistant that can read files can use it: Claude, Cursor, Codex, GitHub Copilot, and more. It's also built to plug into airline and hotel connectors as those arrive, so one day it can pull your reservations and book for you directly.
 
 ---
 
@@ -23,6 +23,39 @@ Here's a real trip built with this skill: **[`examples/sicily-family-trip.html`]
 - **A drop zone for your stuff.** Paste booking confirmations, forwarded emails, or links to hotels and restaurants. It pulls out the dates, confirmation numbers, and prices and slots them into your plan.
 - **Two ways to share.** A lightweight working version, and a fully self-contained version with every image embedded so it travels as one file over email or AirDrop.
 
+## Get the skill
+
+There are two ways to get it, depending on how you'll use it.
+
+**Just the skill file (for the Claude app):** download [`travel-itinerary.skill`](./travel-itinerary.skill). That single file is all you need.
+
+**The whole folder (for Cursor, Codex, Claude Code, and other agents):** click the green **Code** button near the top of this page, then **Download ZIP**, and unzip it. That gives you the `travel-itinerary` folder on your computer, no terminal required. (If you are comfortable with a terminal, you can instead run `git clone https://github.com/mattesobel/travel-itinerary-skill.git`.)
+
+## Set it up with your AI
+
+Pick your tool. There's nothing to build and no dependencies to install in any of them.
+
+- **Claude — Cowork (easiest):** open the `travel-itinerary.skill` file and click **Save skill**.
+- **Claude — claude.ai (web or desktop):** add the skill in your Claude settings (under Capabilities). Note: custom skills require a paid Claude plan.
+- **Claude Code:** place the `travel-itinerary/` folder in your skills directory (`~/.claude/skills/`), or just point Claude Code at the folder.
+- **Codex:** nothing to configure. Codex automatically reads the [`AGENTS.md`](./AGENTS.md) in this repo and follows the skill. (Codex is available on the free ChatGPT tier, with limits.)
+- **Cursor:** open the folder in Cursor and tell it to "follow `travel-itinerary/SKILL.md`," or add it as a rule so it loads automatically. (Cursor's free tier works for trying it.)
+- **Any other agent:** tell it to read and follow `travel-itinerary/SKILL.md`. That one file is the whole skill.
+
+New to skills and not sure which to use? If you mostly chat with an AI, use the Claude app. If you already use a coding tool like Cursor or Codex, download the folder and point it there.
+
+## Use it
+
+Once it's set up, just talk to your assistant naturally:
+
+- "Help me plan a week in Sicily in June."
+- "Here's my hotel confirmation — add it to my Japan trip." *(paste it)*
+- "Draft an email to the hotel asking about an airport transfer."
+- "Add a day in Cefalù and rebuild the dashboard."
+- "Make a shareable version I can email my family."
+
+You don't have to have all the details. Give it what you have; it builds a first draft and pulls the rest out of you over time. It works best when your AI can also search the web (for destination research and real photos).
+
 ## How a trip is stored
 
 Everything for a trip lives in one portable folder, so it works anywhere with any tool:
@@ -36,37 +69,6 @@ My Trip/
 ├── itinerary-images/           # the hero photo + one per day
 └── _inbox/                     # optional: drop confirmations, links, screenshots here
 ```
-
-## Install
-
-### Claude (Cowork or Claude Code)
-
-Download [`travel-itinerary.skill`](./travel-itinerary.skill) and install it:
-
-- **Cowork:** open the `.skill` file and click **Save skill**.
-- **Claude Code / other Claude surfaces:** place the `travel-itinerary/` folder in your skills directory (for Claude Code, that's `~/.claude/skills/`). See the [Agent Skills docs](https://docs.claude.com/en/docs/agents-and-tools/agent-skills/overview) for the current location.
-
-### From source (any agent that supports skills)
-
-Clone the repo and point your agent at the `travel-itinerary/` folder:
-
-```bash
-git clone https://github.com/mattesobel/travel-itinerary-skill.git
-```
-
-The skill is just Markdown plus a few template files and one small Python script. There's nothing to build and no dependencies to install. Any assistant that can read a `SKILL.md` and follow it can use it.
-
-## Use it
-
-Once installed, just talk to your assistant naturally:
-
-- "Help me plan a week in Sicily in June."
-- "Here's my hotel confirmation — add it to my Japan trip." *(paste it)*
-- "Draft an email to the hotel asking about an airport transfer."
-- "Add a day in Cefalù and rebuild the dashboard."
-- "Make a shareable version I can email my family."
-
-You don't have to have all the details. Give it what you have; it builds a first draft and pulls the rest out of you over time.
 
 ## Make the shareable version
 
@@ -95,6 +97,8 @@ travel-itinerary/
 └── scripts/
     └── embed_images.py            # builds the self-contained shareable dashboard
 ```
+
+The repo also includes an [`AGENTS.md`](./AGENTS.md) at the root, the universal entry point that Codex, Cursor, GitHub Copilot, and other agents read automatically.
 
 ## Roadmap: connectors and direct booking
 
